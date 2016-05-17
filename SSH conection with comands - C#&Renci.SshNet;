@@ -1,0 +1,69 @@
+//  Setup Credentials:
+                    ConnectionInfo connectionInfo = new ConnectionInfo(Host, Username,
+                        new AuthenticationMethod[]{
+
+                        // Pasword based Authentication
+                        new PasswordAuthenticationMethod(Username, Password),
+                        }
+                        );
+                    
+
+                    using (var ssh = new SshClient(connectionInfo))
+                    {
+
+
+
+                        ssh.Connect();
+                        TestDescription.Items.Add("Ligação SSH OK");
+                        //Mata todos os processos do comando antes de executar novo comando:
+                        ssh.CreateCommand(string.Format("killall -9 serial_testmode")).Execute();
+                        
+                        
+
+                        //Faz um Find ao ficheiro de teste:
+
+
+
+              //     if (File.Exists("/root/reboot.sh"))
+              //     {
+              //         return true;
+              //     }
+              //     else
+              //     {
+              //         return false;
+              //     }
+
+
+              //    FileInfo sFile = new FileInfo("/root/");
+              //
+                         bool Exists = File.Exists(@"/root/reboot.sh");
+                     
+                         if (Exists == true)
+                     
+                         {
+                     
+                         //Executa o comando para descomprimir ficheiro de teste:
+                         var cmd = ssh.CreateCommand(string.Format("cd /;gzip -d serial_testmode_2016-04-21_16.tar.gz;tar -xvf serial_testmode_2016-04-21_16.tar")).Execute();
+                     
+                         var result = cmd;
+                     
+                         Console.Write(result);
+
+                         TestDescription.Items.Add("Descomprimiu");
+                         TestDescription.Update();
+                     
+                          }
+
+                        TestDescription.Items.Add("Não Descomprimiu");
+                        TestDescription.Update();
+
+                        //Executa o comando para iniciar teste por Serial Port:
+                        ssh.CreateCommand(string.Format("./serial_testmode >/dev/null 2>&1 &")).Execute();
+
+                        TestDescription.Items.Add("String para iniciar Testes enviada...");
+                        TestDescription.Update();
+                       
+            
+
+
+                        System.Threading.Thread.Sleep(11000);
